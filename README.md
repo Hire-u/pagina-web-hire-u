@@ -180,4 +180,4 @@ Este proyecto se distribuye con fines académicos y educativos.
 
 🦆 Hire-U
 
-Tu camino laboral empieza aquí.
+Tu camino laboral empieza aqui.
