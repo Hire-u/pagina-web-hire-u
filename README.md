@@ -1,7 +1,6 @@
 🚀 Hire-U - Tu Camino Laboral Empieza Aquí
 
 📖 Descripción
-
 Hire-U es una plataforma web diseñada para conectar estudiantes, egresados y empresas en un entorno digital moderno, intuitivo y accesible.
 
 La plataforma facilita la búsqueda de oportunidades laborales, prácticas profesionales y primeros empleos, brindando a los usuarios una experiencia similar a los portales de empleo más reconocidos, pero enfocada específicamente en el talento universitario.
