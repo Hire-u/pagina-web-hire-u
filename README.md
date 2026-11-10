@@ -1,182 +1,124 @@
-🚀 Hire-U - Tu Camino Laboral Empieza Aquí
+# Hire-U
 
-📖 Descripción
-Hire-U es una plataforma web diseñada para conectar estudiantes, egresados y empresas en un entorno digital moderno, intuitivo y accesible.
+Hire-U es una aplicación web para conectar estudiantes y egresados con oportunidades laborales. El frontend permite explorar vacantes y crear una cuenta. El backend guarda perfiles y sesiones en MySQL y verifica las credenciales al iniciar sesión.
 
-La plataforma facilita la búsqueda de oportunidades laborales, prácticas profesionales y primeros empleos, brindando a los usuarios una experiencia similar a los portales de empleo más reconocidos, pero enfocada específicamente en el talento universitario.
+## Arquitectura
 
-El objetivo principal de Hire-U es reducir la brecha entre la formación académica y el mercado laboral, permitiendo que los egresados encuentren oportunidades acordes a sus habilidades, mientras las empresas descubren nuevos talentos de manera eficiente.
+El proyecto separa las responsabilidades MVC en el cliente y el servidor:
 
-🎯 Objetivos del Proyecto
-Facilitar la inserción laboral de estudiantes y egresados.
-Centralizar oportunidades laborales en una única plataforma.
-Mejorar la visibilidad del talento universitario.
-Permitir a las empresas encontrar candidatos calificados.
-Crear una experiencia digital moderna y profesional.
-✨ Características Principales
-🔍 Búsqueda Inteligente de Empleos
+- **Frontend, modelos** (`js/models/`): `JobModel` administra el catálogo y los favoritos; `AuthModel` envía las operaciones de cuenta a la API.
+- **Frontend, vistas** (`js/views/`): `JobView` y `ProfileView` leen y actualizan el DOM sin contener reglas de autenticación ni consultas SQL.
+- **Frontend, controladores** (`js/controllers/`): `JobController` y `ProfileController` coordinan formularios, eventos, modelos y vistas.
+- **Backend, rutas** (`server/routes/`): declara los endpoints HTTP de autenticación.
+- **Backend, controlador** (`server/controllers/authController.js`): valida los datos, aplica hashing y coordina las operaciones y sesiones.
+- **Backend, modelo** (`server/models/EgresadoModel.js`): ejecuta consultas parametrizadas para buscar y crear egresados en las tablas `Egresado` y `Estudios`.
+- **Configuración y arranque** (`server/config/`, `server/app.js`): crea el pool de base de datos, configura sesiones y sirve el sitio y la API desde el mismo origen.
 
-Los usuarios pueden buscar vacantes por:
+### Flujo de registro e inicio de sesión
 
-Cargo
-Empresa
-Área profesional
-Ubicación
-Modalidad de trabajo
-📑 Sistema de Filtros
+1. El formulario HTML de registro envía nombre, correo, contraseña y datos académicos a `AuthModel`.
+2. `ProfileController` comprueba que las contraseñas coincidan; el servidor vuelve a validar los datos.
+3. El controlador de autenticación convierte el correo a minúsculas, rechaza cuentas duplicadas y guarda la contraseña como hash bcrypt. Las consultas SQL son parametrizadas.
+4. Después de crear la cuenta, el servidor abre una sesión guardada en MySQL y devuelve solo los datos públicos del perfil.
+5. Al iniciar sesión, el servidor busca el correo y compara la contraseña con el hash. Si coinciden, regenera la sesión y responde con el perfil.
+6. La cookie de sesión es `HttpOnly` y `SameSite=Lax`; al volver a cargar la página, `/api/auth/me` permite reconocer al usuario sin guardar la contraseña ni el token en `localStorage`.
 
-La plataforma permite refinar los resultados mediante:
+### Estructura
 
-Modalidad (Remoto, Híbrido, Presencial)
-Tipo de empleo
-Ubicación
-Área profesional
-💼 Gestión de Vacantes
-
-Los usuarios pueden:
-
-Consultar ofertas disponibles
-Visualizar detalles completos
-Guardar vacantes favoritas
-Acceder rápidamente a oportunidades relevantes
-🏢 Empresas Destacadas
-
-Sección dedicada a organizaciones que buscan talento universitario.
-
-Ejemplos:
-
-Microsoft
-Alcon
-Mercado Libre
-Bancolombia
-Amazon
-Deloitte
-🎓 Registro de Egresados
-
-Los candidatos pueden crear un perfil profesional que incluya:
-
-Información personal
-Formación académica
-Experiencia laboral
-Habilidades técnicas
-Hoja de vida
-Redes profesionales
-🔐 Inicio de Sesión
-
-La plataforma está preparada para integrar:
-
-Autenticación tradicional
-JWT
-OAuth
-Google Sign-In
-Microsoft Sign-In
-🎨 Identidad Visual
-
-La identidad visual de Hire-U está inspirada en su mascota institucional y utiliza una paleta moderna y profesional.
-
-Colores Corporativos
-Color	CódigoNegro Principal	#111111
-Naranja Corporativo	#FF7A00
-Naranja Oscuro	#E86100
-Blanco	#FFFFFF
-Gris Claro	#F7F5F2
-🛠 Tecnologías Utilizadas
-Frontend
-HTML5
-CSS3
-JavaScript Vanilla
-Diseño
-Responsive Design
-CSS Grid
-Flexbox
-Variables CSS
-Animaciones CSS
-Compatibilidad
-Google Chrome
-Microsoft Edge
-Firefox
-Safari
-📁 Estructura del Proyecto
-Plain Text
-Hire-U/
-│
+```text
+.
 ├── index.html
-│
+├── registro-egresado.html
 ├── styles.css
-│
 ├── script.js
-│
+├── profile.js
+├── js/
+│   ├── controllers/
+│   ├── models/
+│   └── views/
+├── server/
+│   ├── app.js
+│   ├── config/database.js
+│   ├── controllers/authController.js
+│   ├── models/EgresadoModel.js
+│   └── routes/authRoutes.js
+├── database/migrations/001_add_auth_to_egresado.sql
 ├── assets/
-│ └── logo-hire-u.png
-│
-└── README.md
-🚀 Instalación
-1. Clonar el repositorio
-Shell
-git clone https://github.com/tuusuario/hire-u.git
-2. Entrar al proyecto
-Shell
-cd hire-u
-3. Abrir la aplicación
+├── .env.example
+└── package.json
+```
 
-Abrir el archivo:
+## Configuración local
 
-Plain Text
-index.html
+Requisitos: Node.js 20 o posterior y MySQL 8 (o una versión compatible con `utf8mb4`). No se debe conectar MySQL directamente desde el navegador.
 
-o utilizar Live Server en Visual Studio Code.
+1. Prepara la base `Hireu` con el esquema SQL que compartiste. **Ese archivo comienza con `DROP DATABASE IF EXISTS Hireu`; no lo ejecutes sobre una base que quieras conservar**, porque borrará todos sus datos. Si la base ya existe, omite la importación completa y continúa con la migración de autenticación. Si estás creando una base vacía, créala primero, quita esa línea `DROP DATABASE` del archivo y luego importa el resto del esquema.
 
-📱 Diseño Responsive
+2. Ejecuta una sola vez la migración, después de que existan las tablas `Egresado` y `Estudios`:
 
-Hire-U ha sido desarrollado siguiendo principios Mobile First.
+   ```bash
+   mysql -u root -p < database/migrations/001_add_auth_to_egresado.sql
+   ```
 
-Adaptado para:
+   La migración agrega `ContrasenaHash` y un índice único para `CorreoInstitucional`; no elimina ni recrea la base. Antes de ejecutarla, asegúrate de que no existan correos duplicados en `Egresado` (la consulta de comprobación está comentada al inicio del archivo).
 
-📱 Smartphones
-📲 Tablets
-💻 Portátiles
-🖥 Monitores de escritorio
-🔮 Funcionalidades Futuras
-Para Egresados
-Postulación directa
-Carga de CV PDF
-Seguimiento de aplicaciones
-Alertas de empleo
-Perfil profesional avanzado
-Para Empresas
-Publicación de vacantes
-Gestión de candidatos
-Panel administrativo
-Estadísticas de contratación
-Filtros avanzados de talento
-Para Administradores
-Gestión de usuarios
-Gestión de empresas
-Gestión de vacantes
-Dashboard analítico
-Reportes institucionales
-🌟 Impacto Esperado
+3. Crea el archivo local de configuración y edita los valores para tu instalación:
 
-Hire-U busca convertirse en un puente entre la educación superior y el mundo laboral, facilitando el acceso a oportunidades profesionales y fortaleciendo la empleabilidad de los estudiantes y egresados.
+   ```bash
+   cp .env.example .env
+   ```
 
-La plataforma promueve:
+   Configura `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME=Hireu`. Cambia `SESSION_SECRET` por una cadena aleatoria de al menos 32 caracteres. No compartas ni subas `.env` al repositorio; está excluido por `.gitignore`.
 
-Inserción laboral temprana.
-Desarrollo profesional.
-Relacionamiento universidad-empresa.
-Visibilidad del talento emergente.
-👨‍💻 Autor
+   Puedes generar el secreto de sesión con `openssl rand -hex 48` y pegar el resultado en `.env`. Para desarrollo, crea un usuario MySQL dedicado en vez de usar `root`:
 
-Andrés Quintero
+   ```sql
+   CREATE USER 'hire_u_app'@'localhost' IDENTIFIED BY 'elige-una-contrasena';
+   GRANT SELECT, INSERT, UPDATE, DELETE, CREATE ON Hireu.* TO 'hire_u_app'@'localhost';
+   ```
 
-Proyecto académico desarrollado para fortalecer la conexión entre estudiantes, egresados y empresas mediante tecnología e innovación.
+   El servidor crea la tabla de sesiones automáticamente la primera vez que inicia; por eso el usuario de aplicación necesita `CREATE` además de los permisos de lectura, inserción, actualización y eliminación.
 
-📄 Licencia
+4. Instala dependencias e inicia el backend desde la raíz del proyecto:
 
-Este proyecto se distribuye con fines académicos y educativos.
+   ```bash
+   npm install
+   npm run dev
+   ```
 
-© 2026 Hire-U. Todos los derechos reservados.
+5. Abre `http://localhost:3000`. Express sirve el HTML, CSS, módulos frontend y endpoints API desde el mismo origen. No uses `file://`, Live Server ni `python -m http.server` para este flujo, porque esos servidores no ejecutan la API.
 
-🦆 Hire-U
+Para un despliegue, usa HTTPS y establece `NODE_ENV=production`; así la cookie de sesión también requiere conexión segura. Usa un usuario MySQL de aplicación con privilegios limitados y gestiona los secretos mediante la plataforma de despliegue.
 
-Tu camino laboral empieza aqui.
+## Base de datos y API
+
+La cuenta se guarda en `Hireu.Egresado`: nombres, apellidos, correo institucional, carrera, año de grado y perfil profesional. La contraseña se guarda como hash en `ContrasenaHash`. La institución y el nivel académico se guardan en `Hireu.Estudios`. La tabla `sessions` es gestionada por `express-mysql-session`.
+
+- `POST /api/auth/register`: valida y crea un perfil, inicia sesión y devuelve `201`.
+- `POST /api/auth/login`: valida credenciales y devuelve el perfil o un error genérico `401`.
+- `GET /api/auth/me`: devuelve el perfil de la sesión actual o `401`.
+- `POST /api/auth/logout`: destruye la sesión y expira la cookie.
+
+El registro valida los límites de los campos, normaliza correos, aplica bcrypt y devuelve `409` si el correo ya está registrado. Los endpoints de autenticación tienen límite de intentos. No se devuelve el hash ni se aceptan consultas SQL desde el cliente. Los egresados que ya estaban en la tabla antes de la migración tienen `ContrasenaHash` vacío: no pueden iniciar sesión hasta que se les asigne una contraseña mediante un proceso seguro; no se les asigna una contraseña común automáticamente.
+
+## Funcionalidades y alcance
+
+- Buscar y filtrar vacantes, ordenarlas y consultar sus detalles.
+- Guardar vacantes favoritas en `localStorage`.
+- Crear perfil con datos académicos y contraseña; el registro inicia sesión automáticamente.
+- Iniciar sesión con una cuenta almacenada en MySQL, reconocer la sesión al recargar y cerrarla desde la página principal.
+
+El catálogo de vacantes sigue siendo una colección de demostración en `JobModel.js`. Este backend administra cuentas y sesiones, no ofrece todavía gestión de vacantes ni postulaciones. Las credenciales de una base real no se incluyen en el repositorio; cada entorno debe completar su propio `.env`.
+
+## Verificación manual
+
+1. Configura MySQL y arranca con `npm run dev`.
+2. Abre **Crear perfil**, completa el formulario y envíalo.
+3. Confirma que vuelve a la página principal y aparece el saludo con el nombre.
+4. Recarga la página: el saludo debe mantenerse gracias a la sesión.
+5. Cierra sesión, vuelve a ingresar con el correo y la contraseña registrados y comprueba el saludo.
+6. Prueba un correo duplicado y una contraseña incorrecta; la interfaz debe mostrar el error sin exponer información sensible.
+
+## Tecnologías
+
+HTML, CSS, JavaScript con módulos ES, Node.js, Express, MySQL, `mysql2`, `express-session` y `bcryptjs`.

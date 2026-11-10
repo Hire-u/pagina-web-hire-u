@@ -32,6 +32,8 @@
 
       <div class="header-actions">
         <button class="button button-ghost" type="button" data-open-login>Iniciar sesión</button>
+        <span class="account-status" id="accountStatus" hidden></span>
+        <button class="button button-ghost" type="button" data-auth-logout hidden>Cerrar sesión</button>
         <a class="button button-primary" href="registro-egresado.html">Crear perfil</a>
       </div>
     </div>
@@ -213,14 +215,14 @@
     <button class="modal-close" type="button" data-close-login aria-label="Cerrar">×</button>
     <div class="login-header"><span class="brand-mark">H</span><h2>Bienvenido a Hire-U</h2><p>Ingresa para gestionar tu perfil y tus postulaciones.</p></div>
     <form id="loginForm">
-      <label>Correo electrónico<input type="email" required placeholder="nombre@correo.com"></label>
-      <label>Contraseña<input type="password" required minlength="6" placeholder="••••••••"></label>
+      <label>Correo electrónico<input name="email" type="email" required autocomplete="username" placeholder="nombre@correo.com"></label>
+      <label>Contraseña<input name="password" type="password" required minlength="8" autocomplete="current-password" placeholder="••••••••"></label>
       <button class="button button-primary full-width" type="submit">Iniciar sesión</button>
-      <p class="form-message" id="loginMessage"></p>
+      <p class="form-message" id="loginMessage" role="status" aria-live="polite"></p>
     </form>
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
