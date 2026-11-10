@@ -1,11 +1,21 @@
 export class AuthModel {
   async request(path, method = 'GET', data = undefined) {
-    const response = await fetch(path, {
-      method,
-      credentials: 'same-origin',
-      headers: data ? { 'Content-Type': 'application/json' } : undefined,
-      body: data ? JSON.stringify(data) : undefined
-    });
+    let response;
+    try {
+      response = await fetch(path, {
+        method,
+        credentials: 'same-origin',
+        headers: data ? { 'Content-Type': 'application/json' } : undefined,
+        body: data ? JSON.stringify(data) : undefined
+      });
+    } catch {
+      throw new Error('No se pudo conectar con la API. Inicia MySQL y el backend con «npm run dev».');
+    }
+
+    const contentType = response.headers.get('content-type') || '';
+    if (response.status !== 204 && !contentType.includes('application/json')) {
+      throw new Error('Estás usando la vista previa estática. Inicia «npm run dev» y abre Hire-U en http://localhost:3000.');
+    }
     const payload = response.status === 204 ? null : await response.json().catch(() => null);
     if (!response.ok) throw new Error(payload?.message || 'No se pudo completar la solicitud.');
     return payload;

@@ -16,55 +16,115 @@
       <a class="brand" href="./index.html" aria-label="Hire-U, inicio">
         <img class="header-logo" src="assets/logo-hire-u.png" alt="Hire-U">
       </a>
-      <a class="button button-ghost" href="./index.html">Volver al inicio</a>
+      <a class="button button-ghost" id="backToHome" href="./index.html">Volver al inicio</a>
     </div>
   </header>
 
   <main class="profile-content">
-    <p class="eyebrow dark">Únete a Hire-U</p>
-    <h1>Crea tu perfil profesional</h1>
-    <p class="profile-intro">Completa tus datos para conectar con oportunidades para estudiantes y egresados.</p>
+    <div class="profile-heading">
+      <p class="eyebrow dark">PERFIL DE EGRESADO</p>
+      <h1>Tu próximo paso empieza aquí.</h1>
+      <p class="profile-intro">Crea tu perfil para conectar tu formación con nuevas oportunidades.</p>
+    </div>
 
-    <form class="profile-form" id="profileForm">
-      <label class="profile-field" for="firstName">Nombres
-        <input id="firstName" name="firstName" type="text" autocomplete="given-name" maxlength="100" required>
-      </label>
-      <label class="profile-field" for="lastName">Apellidos
-        <input id="lastName" name="lastName" type="text" autocomplete="family-name" maxlength="100" required>
-      </label>
-      <label class="profile-field profile-field-wide" for="email">Correo institucional
-        <input id="email" name="email" type="email" autocomplete="email" maxlength="150" required>
-      </label>
-      <label class="profile-field" for="institution">Institución educativa
-        <input id="institution" name="institution" type="text" autocomplete="organization" maxlength="150">
-      </label>
-      <label class="profile-field" for="academicLevel">Nivel académico
-        <select id="academicLevel" name="academicLevel">
-          <option value="">Seleccionar</option>
-          <option>Técnico</option>
-          <option>Tecnológico</option>
-          <option>Universitario</option>
-          <option>Posgrado</option>
-        </select>
-      </label>
-      <label class="profile-field" for="career">Carrera o área de formación
-        <input id="career" name="career" type="text" maxlength="100">
-      </label>
-      <label class="profile-field" for="graduationYear">Año de grado
-        <input id="graduationYear" name="graduationYear" type="number" min="1950" max="2036" inputmode="numeric">
-      </label>
-      <label class="profile-field profile-field-wide" for="professionalProfile">Perfil profesional
-        <textarea id="professionalProfile" name="professionalProfile" rows="4" maxlength="2000"></textarea>
-      </label>
-      <label class="profile-field" for="password">Contraseña (mínimo 8 caracteres)
-        <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="72" required>
-      </label>
-      <label class="profile-field profile-field-wide" for="confirmPassword">Confirmar contraseña
-        <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="72" required>
-      </label>
-      <p class="form-message profile-message" id="profileMessage" role="status" aria-live="polite"></p>
-      <button class="button button-primary profile-submit" type="submit">Crear perfil</button>
-    </form>
+    <section class="profile-panel" aria-label="Registro de perfil">
+      <div class="profile-progress-heading">
+        <span id="stepCaption">ETAPA 1 DE 3</span>
+        <span id="stepTitle">Datos personales</span>
+      </div>
+      <div class="profile-progress-track" role="progressbar" aria-label="Progreso del registro" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1">
+        <span id="profileProgress"></span>
+      </div>
+      <ol class="profile-steps" aria-label="Etapas del registro">
+        <li class="active" data-step-indicator="0"><span>01</span><span>Cuenta</span></li>
+        <li data-step-indicator="1"><span>02</span><span>Formación</span></li>
+        <li data-step-indicator="2"><span>03</span><span>Seguridad</span></li>
+      </ol>
+
+      <form class="profile-form" id="profileForm">
+        <section class="profile-step" data-profile-step="0" aria-labelledby="accountStepTitle">
+          <div class="profile-step-heading">
+            <span class="profile-step-kicker">01 / CUENTA</span>
+            <h2 id="accountStepTitle">Empecemos por conocerte</h2>
+            <p>Usaremos estos datos para identificar tu perfil.</p>
+          </div>
+          <div class="profile-fields">
+            <label class="profile-field" for="firstName">Nombres
+              <input id="firstName" name="firstName" type="text" autocomplete="given-name" maxlength="100" placeholder="Ej. María José" required>
+            </label>
+            <label class="profile-field" for="lastName">Apellidos
+              <input id="lastName" name="lastName" type="text" autocomplete="family-name" maxlength="100" placeholder="Ej. García López" required>
+            </label>
+            <label class="profile-field profile-field-wide" for="email">Correo institucional
+              <input id="email" name="email" type="email" autocomplete="email" maxlength="150" placeholder="nombre@universidad.edu.co" required>
+            </label>
+          </div>
+        </section>
+
+        <section class="profile-step" data-profile-step="1" aria-labelledby="educationStepTitle" hidden>
+          <div class="profile-step-heading">
+            <span class="profile-step-kicker">02 / FORMACIÓN</span>
+            <h2>Cuéntanos qué has estudiado</h2>
+            <p>Tu formación nos ayuda a acercarte a oportunidades relevantes.</p>
+          </div>
+          <div class="profile-fields">
+            <label class="profile-field profile-field-wide" for="institution">Institución educativa
+              <input id="institution" name="institution" type="text" autocomplete="organization" maxlength="150" placeholder="Nombre de tu institución">
+            </label>
+            <label class="profile-field" for="academicLevel">Nivel académico
+              <select id="academicLevel" name="academicLevel">
+                <option value="">Seleccionar</option>
+                <option>Técnico</option>
+                <option>Tecnológico</option>
+                <option>Universitario</option>
+                <option>Posgrado</option>
+              </select>
+            </label>
+            <label class="profile-field" for="career">Carrera o programa
+              <input id="career" name="career" type="text" maxlength="100" placeholder="Ej. Ingeniería de Sistemas">
+            </label>
+            <label class="profile-field profile-field-wide" for="graduationYear">Año de grado
+              <input id="graduationYear" name="graduationYear" type="number" min="1950" max="2036" inputmode="numeric" placeholder="2025">
+            </label>
+            <label class="profile-field profile-field-wide" for="professionalProfile">Perfil profesional
+              <textarea id="professionalProfile" name="professionalProfile" rows="4" maxlength="2000" placeholder="Resume tus intereses, fortalezas y el tipo de oportunidad que buscas."></textarea>
+              <span class="field-hint"><span id="profileCharacterCount">0</span>/2000</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="profile-step" data-profile-step="2" aria-labelledby="securityStepTitle" hidden>
+          <div class="profile-step-heading">
+            <span class="profile-step-kicker">03 / SEGURIDAD</span>
+            <h2>Protege tu cuenta</h2>
+            <p>Elige una contraseña que no uses en otros sitios.</p>
+          </div>
+          <div class="profile-fields profile-fields-security">
+            <label class="profile-field profile-field-wide" for="password">Contraseña
+              <span class="password-control">
+                <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="72" placeholder="Mínimo 8 caracteres" required>
+                <button class="password-toggle" type="button" data-toggle-password="password" aria-label="Mostrar contraseña" title="Mostrar contraseña">◉</button>
+              </span>
+              <span class="password-strength"><span id="passwordStrengthBar"></span></span>
+              <span class="field-hint" id="passwordStrengthText" aria-live="polite">Usa al menos 8 caracteres.</span>
+            </label>
+            <label class="profile-field profile-field-wide" for="confirmPassword">Confirmar contraseña
+              <span class="password-control">
+                <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="72" placeholder="Escríbela de nuevo" required>
+                <button class="password-toggle" type="button" data-toggle-password="confirmPassword" aria-label="Mostrar contraseña" title="Mostrar contraseña">◉</button>
+              </span>
+            </label>
+          </div>
+        </section>
+
+        <p class="form-message profile-message" id="profileMessage" role="status" aria-live="polite"></p>
+        <div class="profile-form-actions">
+          <button class="button button-ghost profile-previous" id="previousStep" type="button" hidden>← Anterior</button>
+          <button class="button button-primary profile-next" id="nextStep" type="button">Continuar <span aria-hidden="true">→</span></button>
+          <button class="button button-primary profile-submit" id="submitProfile" type="submit" hidden>Crear perfil <span aria-hidden="true">✓</span></button>
+        </div>
+      </form>
+    </section>
     <p class="profile-login">¿Ya tienes una cuenta? <a href="./index.html#inicio">Inicia sesión</a></p>
   </main>
   <script type="module" src="profile.js"></script>

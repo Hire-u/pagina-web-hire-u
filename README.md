@@ -88,6 +88,8 @@ Requisitos: Node.js 20 o posterior y MySQL 8 (o una versión compatible con `utf
 
 5. Abre `http://localhost:3000`. Express sirve el HTML, CSS, módulos frontend y endpoints API desde el mismo origen. No uses `file://`, Live Server ni `python -m http.server` para este flujo, porque esos servidores no ejecutan la API.
 
+Si aparece el aviso de vista previa estática o no se puede conectar con la API, confirma que MySQL está activo, que existe `.env` con sus datos de conexión y que abriste `http://localhost:3000` después de ejecutar `npm run dev`. El puerto `8000` solo sirve para revisar el diseño y no guarda registros.
+
 Para un despliegue, usa HTTPS y establece `NODE_ENV=production`; así la cookie de sesión también requiere conexión segura. Usa un usuario MySQL de aplicación con privilegios limitados y gestiona los secretos mediante la plataforma de despliegue.
 
 ## Base de datos y API
