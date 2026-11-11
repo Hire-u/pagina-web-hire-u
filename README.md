@@ -90,6 +90,12 @@ Requisitos: Node.js 20 o posterior y MySQL 8 (o una versión compatible con `utf
 
 Si aparece el aviso de vista previa estática o no se puede conectar con la API, confirma que MySQL está activo, que existe `.env` con sus datos de conexión y que abriste `http://localhost:3000` después de ejecutar `npm run dev`. El puerto `8000` solo sirve para revisar el diseño y no guarda registros.
 
+### GitHub Codespaces
+
+En **Settings → Codespaces → Codespaces secrets**, configura `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` y `SESSION_SECRET` con acceso al repositorio. Codespaces los proporciona al entorno como variables de entorno; no se deben incluir sus valores en el repositorio ni en el frontend. El servidor ya las lee desde `process.env`.
+
+La configuración de `.devcontainer/devcontainer.json` instala dependencias al crear el contenedor, ejecuta `npm run dev` al conectarse y reenvía el puerto 3000 para abrir el sitio. Para aplicar esta configuración a un Codespace existente, guarda y sube los cambios al repositorio, luego usa **Codespaces: Rebuild Container**. Para que los secretos recién guardados aparezcan, detén e inicia el Codespace. Al abrir el Codespace, espera a que inicie el servidor y se abra la vista del puerto 3000.
+
 Para un despliegue, usa HTTPS y establece `NODE_ENV=production`; así la cookie de sesión también requiere conexión segura. Usa un usuario MySQL de aplicación con privilegios limitados y gestiona los secretos mediante la plataforma de despliegue.
 
 ## Base de datos y API
