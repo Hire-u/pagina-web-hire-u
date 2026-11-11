@@ -113,8 +113,18 @@ export class JobView {
   }
 
   setAuthenticatedUser(user) {
-    this.getElement('accountStatus').hidden = !user;
-    this.getElement('accountStatus').textContent = user ? `Hola, ${user.fullName}` : '';
+    const accountStatus = this.getElement('accountStatus');
+    accountStatus.hidden = !user;
+    accountStatus.replaceChildren();
+    if (user) {
+      const greeting = this.document.createElement('span');
+      greeting.className = 'account-greeting';
+      greeting.textContent = 'Hola';
+      const name = this.document.createElement('strong');
+      name.className = 'account-name';
+      name.textContent = user.fullName;
+      accountStatus.append(greeting, name);
+    }
     this.document.querySelectorAll('[data-open-login]').forEach(button => {
       button.hidden = Boolean(user);
     });

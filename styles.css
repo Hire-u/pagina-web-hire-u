@@ -31,7 +31,12 @@
 .toast{background:#151515;border-left:4px solid #ff7a00}
 @media(max-width:980px){.main-nav{background:#111;border-bottom-color:rgba(255,122,0,.25)}}
 @media(max-width:700px){.header-logo{width:94px;height:48px}.hero-logo{max-height:190px}.hero{padding-top:55px}}
-.account-status{color:#fff;font-size:.92rem;font-weight:600;white-space:nowrap}
+.account-status{display:inline-flex;align-items:center;justify-content:center;gap:8px;max-width:230px;padding:8px 13px;border:1px solid rgba(255,122,0,.35);border-radius:999px;background:rgba(255,122,0,.12);color:#fff;text-align:center}
+.account-status[hidden]{display:none}
+.account-status::before{content:"";width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#ff7a00;box-shadow:0 0 0 4px rgba(255,122,0,.14)}
+.account-greeting{color:#ffc18c;font-size:.78rem;font-weight:600}
+.account-name{overflow:hidden;color:#fff;font-size:.92rem;font-weight:750;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:700px){.account-status{max-width:42vw;gap:6px;padding:7px 10px}.account-greeting{font-size:.72rem}.account-name{max-width:calc(42vw - 45px);font-size:.84rem}}
 .profile-page{min-height:100vh;background-color:#f4f6f7;background-image:linear-gradient(rgba(18,26,32,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(18,26,32,.035) 1px,transparent 1px);background-size:28px 28px}
 .profile-header{justify-content:space-between}
 .profile-content{width:min(760px,calc(100% - 32px));margin:52px auto 0;padding-bottom:52px}
