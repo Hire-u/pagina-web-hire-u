@@ -29,6 +29,14 @@ export class AuthModel {
     return this.request('/api/auth/login', 'POST', credentials);
   }
 
+  requestPasswordReset(email) {
+    return this.request('/api/auth/forgot-password', 'POST', { email });
+  }
+
+  resetPassword(credentials) {
+    return this.request('/api/auth/reset-password', 'POST', credentials);
+  }
+
   async currentUser() {
     const response = await fetch('/api/auth/me', { credentials: 'same-origin' });
     if (response.status === 401) return null;

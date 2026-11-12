@@ -62,13 +62,19 @@ Requisitos: Node.js 20 o posterior y MySQL 8 (o una versión compatible con `utf
 
    La migración agrega `ContrasenaHash` y un índice único para `CorreoInstitucional`; no elimina ni recrea la base. Antes de ejecutarla, asegúrate de que no existan correos duplicados en `Egresado` (la consulta de comprobación está comentada al inicio del archivo).
 
+   Ejecuta también la migración de recuperación de contraseña:
+
+   ```bash
+   mysql -u root -p < database/migrations/002_add_password_reset.sql
+   ```
+
 3. Crea el archivo local de configuración y edita los valores para tu instalación:
 
    ```bash
    cp .env.example .env
    ```
 
-   Configura `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME=Hireu`. Cambia `SESSION_SECRET` por una cadena aleatoria de al menos 32 caracteres. No compartas ni subas `.env` al repositorio; está excluido por `.gitignore`.
+   Configura `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME=Hireu`. Para recuperar contraseñas, configura `APP_BASE_URL` y las variables `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` y `SMTP_FROM` con los datos de tu proveedor de correo. Cambia `SESSION_SECRET` por una cadena aleatoria de al menos 32 caracteres. No compartas ni subas `.env` al repositorio; está excluido por `.gitignore`.
 
    Puedes generar el secreto de sesión con `openssl rand -hex 48` y pegar el resultado en `.env`. Para desarrollo, crea un usuario MySQL dedicado en vez de usar `root`:
 
@@ -104,6 +110,8 @@ La cuenta se guarda en `Hireu.Egresado`: nombres, apellidos, correo instituciona
 
 - `POST /api/auth/register`: valida y crea un perfil, inicia sesión y devuelve `201`.
 - `POST /api/auth/login`: valida credenciales y devuelve el perfil o un error genérico `401`.
+- `POST /api/auth/forgot-password`: envía un enlace de un solo uso si el correo está registrado, sin revelar si existe.
+- `POST /api/auth/reset-password`: guarda el nuevo hash bcrypt y consume el token, que vence en una hora.
 - `GET /api/auth/me`: devuelve el perfil de la sesión actual o `401`.
 - `POST /api/auth/logout`: destruye la sesión y expira la cookie.
 

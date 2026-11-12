@@ -10,6 +10,7 @@ export class JobController {
     this.bindEvents();
     this.applyFilters();
     this.restoreSession();
+    this.handlePasswordResetLink();
   }
 
   bindEvents() {
@@ -24,6 +25,12 @@ export class JobController {
     this.view.getElement('jobsGrid').addEventListener('click', event => this.handleJobGridClick(event));
     this.view.getElement('jobModal').addEventListener('click', event => this.handleJobModalClick(event));
     this.view.getElement('loginForm').addEventListener('submit', event => this.handleLoginSubmit(event));
+    this.view.getElement('forgotPasswordForm').addEventListener('submit', event => this.handleForgotPasswordSubmit(event));
+    this.view.getElement('resetPasswordForm').addEventListener('submit', event => this.handleResetPasswordSubmit(event));
+    this.view.getElement('showForgotPassword').addEventListener('click', () => this.view.showForgotPasswordForm());
+    this.view.document.querySelectorAll('[data-show-login]').forEach(button => {
+      button.addEventListener('click', () => this.view.showLoginForm());
+    });
     this.view.document.querySelectorAll('[data-auth-logout]').forEach(button => {
       button.addEventListener('click', () => this.handleLogout());
     });
@@ -34,7 +41,10 @@ export class JobController {
       button.addEventListener('click', () => this.handleQuickSearch(button.dataset.quickSearch));
     });
     this.view.document.querySelectorAll('[data-open-login]').forEach(button => {
-      button.addEventListener('click', () => this.view.showLoginModal());
+      button.addEventListener('click', () => {
+        this.view.showLoginForm();
+        this.view.showLoginModal();
+      });
     });
     this.view.document.querySelector('[data-close-modal]').addEventListener('click', () => this.view.closeJobModal());
     this.view.document.querySelector('[data-close-login]').addEventListener('click', () => this.view.closeLoginModal());
@@ -122,6 +132,52 @@ export class JobController {
       this.view.showLoginMessage(error.message);
     } finally {
       this.view.setLoginLoading(false);
+    }
+  }
+
+  handlePasswordResetLink() {
+    const url = new URL(this.view.document.location.href);
+    const token = url.searchParams.get('resetToken');
+    if (!token) return;
+    this.view.showResetPasswordForm(token);
+    url.searchParams.delete('resetToken');
+    this.view.document.defaultView.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+  }
+
+  async handleForgotPasswordSubmit(event) {
+    event.preventDefault();
+    const formId = 'forgotPasswordForm';
+    this.view.showFormMessage(formId, '');
+    this.view.setFormLoading(formId, true, 'Enviando…', 'Enviar enlace de recuperación');
+    try {
+      const { message } = await this.authModel.requestPasswordReset(this.view.getForgotPasswordEmail());
+      this.view.showFormMessage(formId, message);
+    } catch (error) {
+      this.view.showFormMessage(formId, error.message);
+    } finally {
+      this.view.setFormLoading(formId, false, '', 'Enviar enlace de recuperación');
+    }
+  }
+
+  async handleResetPasswordSubmit(event) {
+    event.preventDefault();
+    const formId = 'resetPasswordForm';
+    const credentials = this.view.getResetPasswordCredentials();
+    if (credentials.password !== credentials.confirmPassword) {
+      this.view.showFormMessage(formId, 'Las contraseñas no coinciden.');
+      return;
+    }
+
+    this.view.showFormMessage(formId, '');
+    this.view.setFormLoading(formId, true, 'Actualizando…', 'Actualizar contraseña');
+    try {
+      const { message } = await this.authModel.resetPassword(credentials);
+      this.view.showFormMessage(formId, message);
+      this.view.getElement(formId).reset();
+    } catch (error) {
+      this.view.showFormMessage(formId, error.message);
+    } finally {
+      this.view.setFormLoading(formId, false, '', 'Actualizar contraseña');
     }
   }
 

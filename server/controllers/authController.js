@@ -1,5 +1,41 @@
 import bcrypt from 'bcryptjs';
+import { createHash, randomBytes } from 'node:crypto';
+import nodemailer from 'nodemailer';
 import { EgresadoModel } from '../models/EgresadoModel.js';
+
+const passwordResetMessage = 'Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.';
+
+const createResetMailer = () => {
+  const { SMTP_HOST, SMTP_FROM } = process.env;
+  const port = Number(process.env.SMTP_PORT || 587);
+  if (!SMTP_HOST || !SMTP_FROM || !Number.isInteger(port) || port < 1 || port > 65535) {
+    const error = new Error('El servicio de correo no está configurado.');
+    error.status = 503;
+    throw error;
+  }
+  if (Boolean(process.env.SMTP_USER) !== Boolean(process.env.SMTP_PASSWORD)) {
+    const error = new Error('La autenticación SMTP está incompleta.');
+    error.status = 503;
+    throw error;
+  }
+  return nodemailer.createTransport({
+    host: SMTP_HOST,
+    port,
+    secure: process.env.SMTP_SECURE === 'true',
+    auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD } : undefined
+  });
+};
+
+const createResetUrl = token => {
+  const url = new URL('/', process.env.APP_BASE_URL || 'http://localhost:3000');
+  if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || (process.env.NODE_ENV === 'production' && url.protocol !== 'https:')) {
+    const error = new Error('APP_BASE_URL no es válida o debe usar HTTPS en producción.');
+    error.status = 503;
+    throw error;
+  }
+  url.searchParams.set('resetToken', token);
+  return url.toString();
+};
 
 const publicUser = egresado => ({
   id: egresado.id,
@@ -95,6 +131,50 @@ export const login = async (request, response) => {
   request.session.userId = egresado.id;
   await saveSession(request);
   return response.json({ user: publicUser(egresado) });
+};
+
+export const requestPasswordReset = async (request, response) => {
+  const email = typeof request.body?.email === 'string' ? request.body.email.trim().toLowerCase() : '';
+  const mailer = createResetMailer();
+  if (!email || email.length > 150 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return response.json({ message: passwordResetMessage });
+  }
+
+  const token = randomBytes(32).toString('hex');
+  const resetUrl = createResetUrl(token);
+  const egresado = await EgresadoModel.findByEmail(email);
+  if (!egresado) return response.json({ message: passwordResetMessage });
+
+  const tokenHash = createHash('sha256').update(token).digest('hex');
+  await EgresadoModel.savePasswordResetToken(email, tokenHash);
+  try {
+    await mailer.sendMail({
+      from: process.env.SMTP_FROM,
+      to: email,
+      subject: 'Restablece tu contraseña de Hire-U',
+      text: `Recibimos una solicitud para cambiar la contraseña de tu cuenta. Abre este enlace antes de una hora:\n\n${resetUrl}\n\nSi no solicitaste este cambio, ignora este mensaje.`
+    });
+  } catch (error) {
+    await EgresadoModel.clearPasswordResetToken(email);
+    console.error('No se pudo enviar el correo de restablecimiento:', error.message);
+  }
+  return response.json({ message: passwordResetMessage });
+};
+
+export const resetPassword = async (request, response) => {
+  const token = typeof request.body?.token === 'string' ? request.body.token : '';
+  const password = typeof request.body?.password === 'string' ? request.body.password : '';
+  if (!/^[a-f0-9]{64}$/i.test(token) || password.length < 8 || Buffer.byteLength(password, 'utf8') > 72) {
+    return response.status(400).json({ message: 'El enlace no es válido o la contraseña no cumple los requisitos.' });
+  }
+
+  const tokenHash = createHash('sha256').update(token).digest('hex');
+  const passwordHash = await bcrypt.hash(password, 12);
+  const updated = await EgresadoModel.updatePasswordWithResetToken(tokenHash, passwordHash);
+  if (!updated) {
+    return response.status(400).json({ message: 'El enlace ha vencido o ya fue utilizado. Solicita uno nuevo.' });
+  }
+  return response.json({ message: 'Contraseña actualizada. Ya puedes iniciar sesión.' });
 };
 
 export const currentUser = async (request, response) => {

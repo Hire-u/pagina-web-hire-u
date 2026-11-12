@@ -90,7 +90,36 @@ export class JobView {
   }
 
   showLoginModal() {
-    this.getElement('loginModal').showModal();
+    const modal = this.getElement('loginModal');
+    if (!modal.open) modal.showModal();
+  }
+
+  showAuthForm(formId) {
+    ['loginForm', 'forgotPasswordForm', 'resetPasswordForm'].forEach(id => {
+      this.getElement(id).hidden = id !== formId;
+    });
+    const copy = {
+      loginForm: ['Bienvenido a Hire-U', 'Ingresa para gestionar tu perfil y tus postulaciones.'],
+      forgotPasswordForm: ['Recupera tu cuenta', 'Te enviaremos un enlace para crear una nueva contraseña.'],
+      resetPasswordForm: ['Crea una nueva contraseña', 'Elige una contraseña segura para tu cuenta.']
+    }[formId];
+    this.getElement('loginModal').querySelector('.login-header h2').textContent = copy[0];
+    this.getElement('loginModal').querySelector('.login-header p').textContent = copy[1];
+  }
+
+  showForgotPasswordForm() {
+    this.getElement('forgotPasswordForm').elements.email.value = this.getElement('loginForm').elements.email.value;
+    this.showAuthForm('forgotPasswordForm');
+  }
+
+  showResetPasswordForm(token) {
+    this.getElement('resetPasswordForm').elements.token.value = token;
+    this.showAuthForm('resetPasswordForm');
+    this.showLoginModal();
+  }
+
+  showLoginForm() {
+    this.showAuthForm('loginForm');
   }
 
   closeLoginModal() {
@@ -98,7 +127,30 @@ export class JobView {
   }
 
   showLoginMessage(message) {
-    this.getElement('loginMessage').textContent = message;
+    this.showFormMessage('loginForm', message);
+  }
+
+  showFormMessage(formId, message) {
+    this.getElement(formId).querySelector('.form-message').textContent = message;
+  }
+
+  setFormLoading(formId, isLoading, loadingText, defaultText) {
+    const button = this.getElement(formId).querySelector('[type="submit"]');
+    button.disabled = isLoading;
+    button.textContent = isLoading ? loadingText : defaultText;
+  }
+
+  getForgotPasswordEmail() {
+    return this.getElement('forgotPasswordForm').elements.email.value;
+  }
+
+  getResetPasswordCredentials() {
+    const formData = new FormData(this.getElement('resetPasswordForm'));
+    return {
+      token: formData.get('token'),
+      password: formData.get('password'),
+      confirmPassword: formData.get('confirmPassword')
+    };
   }
 
   getLoginCredentials() {

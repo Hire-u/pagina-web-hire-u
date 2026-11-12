@@ -29,6 +29,35 @@ export const EgresadoModel = {
     return rows[0] || null;
   },
 
+  async savePasswordResetToken(email, tokenHash) {
+    await pool.execute(
+      `UPDATE Egresado
+       SET TokenRestablecimientoHash = ?,
+           TokenRestablecimientoExpira = DATE_ADD(UTC_TIMESTAMP(), INTERVAL 1 HOUR)
+       WHERE LOWER(CorreoInstitucional) = ?`,
+      [tokenHash, email]
+    );
+  },
+
+  async clearPasswordResetToken(email) {
+    await pool.execute(
+      `UPDATE Egresado
+       SET TokenRestablecimientoHash = NULL, TokenRestablecimientoExpira = NULL
+       WHERE LOWER(CorreoInstitucional) = ?`,
+      [email]
+    );
+  },
+
+  async updatePasswordWithResetToken(tokenHash, passwordHash) {
+    const [result] = await pool.execute(
+      `UPDATE Egresado
+       SET ContrasenaHash = ?, TokenRestablecimientoHash = NULL, TokenRestablecimientoExpira = NULL
+       WHERE TokenRestablecimientoHash = ? AND TokenRestablecimientoExpira > UTC_TIMESTAMP()`,
+      [passwordHash, tokenHash]
+    );
+    return result.affectedRows === 1;
+  },
+
   async create(profile) {
     const connection = await pool.getConnection();
     let egresadoId;
