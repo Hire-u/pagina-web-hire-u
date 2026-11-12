@@ -4,6 +4,8 @@ import nodemailer from 'nodemailer';
 import { EgresadoModel } from '../models/EgresadoModel.js';
 
 const passwordResetMessage = 'Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.';
+const academicEmailPattern = /^[^\s@]+@academia\.usbbog\.edu\.co$/i;
+const academicEmailMessage = 'Usa un correo terminado en @academia.usbbog.edu.co.';
 
 const createResetMailer = () => {
   const { SMTP_HOST, SMTP_FROM } = process.env;
@@ -72,8 +74,8 @@ export const register = async (request, response) => {
   if (firstName.length < 1 || firstName.length > 100 || lastName.length < 1 || lastName.length > 100) {
     return response.status(400).json({ message: 'Ingresa nombres y apellidos de hasta 100 caracteres cada uno.' });
   }
-  if (email.length > 150 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return response.status(400).json({ message: 'Ingresa un correo electrónico válido.' });
+  if (email.length > 150 || !academicEmailPattern.test(email)) {
+    return response.status(400).json({ message: academicEmailMessage });
   }
   if (password.length < 8 || Buffer.byteLength(password, 'utf8') > 72) {
     return response.status(400).json({ message: 'La contraseña debe tener entre 8 y 72 bytes.' });
@@ -117,7 +119,10 @@ export const register = async (request, response) => {
 export const login = async (request, response) => {
   const email = typeof request.body?.email === 'string' ? request.body.email.trim().toLowerCase() : '';
   const password = typeof request.body?.password === 'string' ? request.body.password : '';
-  if (!email || !password || email.length > 150 || Buffer.byteLength(password, 'utf8') > 72) {
+  if (!academicEmailPattern.test(email)) {
+    return response.status(400).json({ message: academicEmailMessage });
+  }
+  if (!password || email.length > 150 || Buffer.byteLength(password, 'utf8') > 72) {
     return response.status(400).json({ message: 'Ingresa un correo y una contraseña válidos.' });
   }
 
@@ -136,7 +141,7 @@ export const login = async (request, response) => {
 export const requestPasswordReset = async (request, response) => {
   const email = typeof request.body?.email === 'string' ? request.body.email.trim().toLowerCase() : '';
   const mailer = createResetMailer();
-  if (!email || email.length > 150 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!email || email.length > 150 || !academicEmailPattern.test(email)) {
     return response.json({ message: passwordResetMessage });
   }
 
