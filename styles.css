@@ -41,6 +41,7 @@
 .auth-switch:hover{text-decoration:underline}
 .login-modal form[hidden]{display:none}
 .form-message.error{color:#dc2626}
+header [data-auth-register][hidden]{display:none}
 .profile-page{min-height:100vh;background-color:#f4f6f7;background-image:linear-gradient(rgba(18,26,32,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(18,26,32,.035) 1px,transparent 1px);background-size:28px 28px}
 .profile-header{justify-content:space-between}
 .profile-content{width:min(760px,calc(100% - 32px));margin:52px auto 0;padding-bottom:52px}

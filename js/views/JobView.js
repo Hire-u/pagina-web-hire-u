@@ -182,6 +182,9 @@ export class JobView {
     this.document.querySelectorAll('[data-open-login]').forEach(button => {
       button.hidden = Boolean(user);
     });
+    this.document.querySelectorAll('[data-auth-register]').forEach(button => {
+      button.hidden = Boolean(user);
+    });
     this.document.querySelectorAll('[data-auth-logout]').forEach(button => {
       button.hidden = !user;
     });
