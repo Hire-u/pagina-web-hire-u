@@ -7,7 +7,7 @@
 /* Hire-U brand enhancements */
 .site-header{background:rgba(15,15,15,.97);border-bottom:1px solid rgba(255,122,0,.22)}
 .header-inner{min-height:82px}
-.header-logo{display:block;width:118px;height:58px;object-fit:cover;object-position:center;border-radius:8px;background:#fff}
+.header-logo{display:block;width:58px;height:58px;object-fit:cover;object-position:center;border-radius:50%;background:#fff}
 .main-nav a{color:#ded8d2}.main-nav a:hover,.main-nav a.active{color:var(--blue)}
 .button-ghost{color:#fff}.button-ghost:hover{background:rgba(255,255,255,.1)}
 .menu-button span{background:#fff}
@@ -30,7 +30,7 @@
 .login-header .brand-mark{background:linear-gradient(135deg,#ff7a00,#ffb45c);color:#111}
 .toast{background:#151515;border-left:4px solid #ff7a00}
 @media(max-width:980px){.main-nav{background:#111;border-bottom-color:rgba(255,122,0,.25)}}
-@media(max-width:700px){.header-logo{width:94px;height:48px}.hero-logo{max-height:190px}.hero{padding-top:55px}}
+@media(max-width:700px){.header-logo{width:48px;height:48px}.hero-logo{max-height:190px}.hero{padding-top:55px}}
 .account-status{display:inline-flex;align-items:center;justify-content:center;gap:8px;max-width:230px;padding:8px 13px;border:1px solid rgba(255,122,0,.35);border-radius:999px;background:rgba(255,122,0,.12);color:#fff;text-align:center}
 .account-status[hidden]{display:none}
 .account-status::before{content:"";width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#ff7a00;box-shadow:0 0 0 4px rgba(255,122,0,.14)}
