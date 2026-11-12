@@ -127,7 +127,9 @@ export class JobView {
   }
 
   showLoginMessage(message) {
-    this.showFormMessage('loginForm', message);
+    const messageElement = this.getElement('loginMessage');
+    messageElement.textContent = message;
+    messageElement.classList.toggle('error', Boolean(message));
   }
 
   showFormMessage(formId, message) {
