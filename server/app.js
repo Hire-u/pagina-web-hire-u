@@ -38,13 +38,7 @@ app.use(session({
   }
 }));
 
-app.get(['/', '/index.html'], (request, response) => response.sendFile(path.join(projectRoot, 'index.html')));
-app.get('/registro-egresado.html', (request, response) => response.sendFile(path.join(projectRoot, 'registro-egresado.html')));
-app.get('/styles.css', (request, response) => response.sendFile(path.join(projectRoot, 'styles.css')));
-app.get('/script.js', (request, response) => response.sendFile(path.join(projectRoot, 'script.js')));
-app.get('/profile.js', (request, response) => response.sendFile(path.join(projectRoot, 'profile.js')));
-app.use('/assets', express.static(path.join(projectRoot, 'assets')));
-app.use('/js', express.static(path.join(projectRoot, 'js')));
+app.use(express.static(path.join(projectRoot, 'public')));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);

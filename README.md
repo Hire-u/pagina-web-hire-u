@@ -4,15 +4,16 @@ Hire-U es una aplicación web para conectar estudiantes y egresados con oportuni
 
 ## Arquitectura
 
-El proyecto separa las responsabilidades MVC en el cliente y el servidor:
+El proyecto separa el sitio, el servidor y la base de datos. Para explicarlo, puedes recorrerlo en este orden:
 
-- **Frontend, modelos** (`js/models/`): `JobModel` administra el catálogo y los favoritos; `AuthModel` envía las operaciones de cuenta a la API.
-- **Frontend, vistas** (`js/views/`): `JobView` y `ProfileView` leen y actualizan el DOM sin contener reglas de autenticación ni consultas SQL.
-- **Frontend, controladores** (`js/controllers/`): `JobController` y `ProfileController` coordinan formularios, eventos, modelos y vistas.
-- **Backend, rutas** (`server/routes/`): declara los endpoints HTTP de autenticación.
-- **Backend, controlador** (`server/controllers/authController.js`): valida los datos, aplica hashing y coordina las operaciones y sesiones.
-- **Backend, modelo** (`server/models/EgresadoModel.js`): ejecuta consultas parametrizadas para buscar y crear egresados en las tablas `Egresado` y `Estudios`.
-- **Configuración y arranque** (`server/config/`, `server/app.js`): crea el pool de base de datos, configura sesiones y sirve el sitio y la API desde el mismo origen.
+1. **Sitio web** (`public/`): contiene las páginas, estilos, imágenes y módulos JavaScript que se ejecutan en el navegador.
+   - `public/index.html` y `public/registro-egresado.html` son las páginas principales.
+   - `public/styles.css` define su presentación.
+   - `public/script.js` y `public/profile.js` conectan cada página con los módulos del frontend.
+   - `public/js/models/`, `public/js/views/` y `public/js/controllers/` separan datos y API, interfaz y coordinación de eventos.
+2. **Servidor** (`server/`): `server/app.js` inicia Express, configura sesiones, sirve `public/` y conecta las rutas de la API. `server/routes/` declara los endpoints; `server/controllers/` implementa sus operaciones; `server/models/` consulta MySQL y `server/config/` configura la conexión.
+3. **Base de datos** (`database/migrations/`): contiene las migraciones para autenticación y recuperación de contraseñas.
+4. **Configuración del proyecto**: `package.json` define dependencias y comandos; `.env.example` muestra las variables esperadas; `.devcontainer/devcontainer.json` configura Codespaces.
 
 ### Flujo de registro e inicio de sesión
 
@@ -27,25 +28,52 @@ El proyecto separa las responsabilidades MVC en el cliente y el servidor:
 
 ```text
 .
-├── index.html
-├── registro-egresado.html
-├── styles.css
-├── script.js
-├── profile.js
-├── js/
-│   ├── controllers/
-│   ├── models/
-│   └── views/
+├── public/
+│   ├── assets/
+│   │   ├── imagen.png
+│   │   ├── logo-hire-u.png
+│   │   └── paco-asistente.svg
+│   ├── js/
+│   │   ├── controllers/
+│   │   │   ├── ChatController.js
+│   │   │   ├── JobController.js
+│   │   │   └── ProfileController.js
+│   │   ├── models/
+│   │   │   ├── AuthModel.js
+│   │   │   ├── ChatModel.js
+│   │   │   └── JobModel.js
+│   │   └── views/
+│   │       ├── ChatView.js
+│   │       ├── JobView.js
+│   │       └── ProfileView.js
+│   ├── index.html
+│   ├── profile.js
+│   ├── registro-egresado.html
+│   ├── script.js
+│   └── styles.css
 ├── server/
-│   ├── app.js
-│   ├── config/database.js
-│   ├── controllers/authController.js
-│   ├── models/EgresadoModel.js
-│   └── routes/authRoutes.js
-├── database/migrations/001_add_auth_to_egresado.sql
-├── assets/
+│   ├── config/
+│   │   └── database.js
+│   ├── controllers/
+│   │   ├── authController.js
+│   │   └── chatController.js
+│   ├── models/
+│   │   └── EgresadoModel.js
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   └── chatRoutes.js
+│   └── app.js
+├── database/
+│   └── migrations/
+│       ├── 001_add_auth_to_egresado.sql
+│       └── 002_add_password_reset.sql
+├── .devcontainer/
+│   └── devcontainer.json
 ├── .env.example
-└── package.json
+├── .gitignore
+├── package-lock.json
+├── package.json
+└── README.md
 ```
 
 ## Configuración local
