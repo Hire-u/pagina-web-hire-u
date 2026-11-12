@@ -23,6 +23,13 @@ export class ProfileController {
 
   nextStep() {
     const fields = this.view.getStepFields(this.currentStep);
+    fields.forEach(field => field.setCustomValidity(''));
+    const emptyRequiredField = fields.find(field => field.required && !field.value.trim());
+    if (emptyRequiredField) {
+      emptyRequiredField.setCustomValidity('Completa este campo.');
+      emptyRequiredField.reportValidity();
+      return;
+    }
     const invalidField = fields.find(field => !field.checkValidity());
     if (invalidField) {
       invalidField.reportValidity();

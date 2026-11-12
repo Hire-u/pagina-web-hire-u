@@ -70,10 +70,10 @@
           </div>
           <div class="profile-fields">
             <label class="profile-field profile-field-wide" for="institution">Institución educativa
-              <input id="institution" name="institution" type="text" autocomplete="organization" maxlength="150" placeholder="Nombre de tu institución">
+              <input id="institution" name="institution" type="text" autocomplete="organization" maxlength="150" placeholder="Nombre de tu institución" required>
             </label>
             <label class="profile-field" for="academicLevel">Nivel académico
-              <select id="academicLevel" name="academicLevel">
+              <select id="academicLevel" name="academicLevel" required>
                 <option value="">Seleccionar</option>
                 <option>Técnico</option>
                 <option>Tecnológico</option>
@@ -82,13 +82,13 @@
               </select>
             </label>
             <label class="profile-field" for="career">Carrera o programa
-              <input id="career" name="career" type="text" maxlength="100" placeholder="Ej. Ingeniería de Sistemas">
+              <input id="career" name="career" type="text" maxlength="100" placeholder="Ej. Ingeniería de Sistemas" required>
             </label>
             <label class="profile-field profile-field-wide" for="graduationYear">Año de grado
-              <input id="graduationYear" name="graduationYear" type="number" min="1950" max="2036" inputmode="numeric" placeholder="2025">
+              <input id="graduationYear" name="graduationYear" type="number" min="1950" max="2036" inputmode="numeric" placeholder="2025" required>
             </label>
             <label class="profile-field profile-field-wide" for="professionalProfile">Perfil profesional
-              <textarea id="professionalProfile" name="professionalProfile" rows="4" maxlength="2000" placeholder="Resume tus intereses, fortalezas y el tipo de oportunidad que buscas."></textarea>
+              <textarea id="professionalProfile" name="professionalProfile" rows="4" maxlength="2000" placeholder="Resume tus intereses, fortalezas y el tipo de oportunidad que buscas." required></textarea>
               <span class="field-hint"><span id="profileCharacterCount">0</span>/2000</span>
             </label>
           </div>

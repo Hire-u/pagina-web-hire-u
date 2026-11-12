@@ -80,6 +80,9 @@ export const register = async (request, response) => {
   if (password.length < 8 || Buffer.byteLength(password, 'utf8') > 72) {
     return response.status(400).json({ message: 'La contraseña debe tener entre 8 y 72 bytes.' });
   }
+  if (!institution || !academicLevel || !career || graduationYear === null || !professionalProfile) {
+    return response.status(400).json({ message: 'Completa todos los campos del perfil antes de continuar.' });
+  }
   if (institution.length > 150 || academicLevel.length > 50 || career.length > 100 || professionalProfile.length > 2000) {
     return response.status(400).json({ message: 'Uno de los campos supera la longitud permitida.' });
   }
