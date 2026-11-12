@@ -166,6 +166,14 @@ export class JobView {
     button.textContent = isLoading ? 'Verificando…' : 'Iniciar sesión';
   }
 
+  togglePassword(inputId, button) {
+    const input = this.getElement(inputId);
+    const showPassword = input.type === 'password';
+    input.type = showPassword ? 'text' : 'password';
+    button.setAttribute('aria-label', showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    button.title = showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña';
+  }
+
   setAuthenticatedUser(user) {
     const accountStatus = this.getElement('accountStatus');
     accountStatus.hidden = !user;

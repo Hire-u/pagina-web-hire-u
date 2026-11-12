@@ -28,6 +28,9 @@ export class JobController {
     this.view.getElement('forgotPasswordForm').addEventListener('submit', event => this.handleForgotPasswordSubmit(event));
     this.view.getElement('resetPasswordForm').addEventListener('submit', event => this.handleResetPasswordSubmit(event));
     this.view.getElement('showForgotPassword').addEventListener('click', () => this.view.showForgotPasswordForm());
+    this.view.document.querySelectorAll('[data-toggle-password]').forEach(button => {
+      button.addEventListener('click', () => this.view.togglePassword(button.dataset.togglePassword, button));
+    });
     this.view.document.querySelectorAll('[data-show-login]').forEach(button => {
       button.addEventListener('click', () => this.view.showLoginForm());
     });

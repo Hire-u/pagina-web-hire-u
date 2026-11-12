@@ -85,7 +85,6 @@
         <div>
           <p class="eyebrow dark">Explora oportunidades</p>
           <h2>Vacantes que impulsan tu carrera</h2>
-          <p>Filtra las ofertas y encuentra la que mejor encaje contigo.</p>
         </div>
         <button class="filter-toggle" id="filterToggle" type="button" aria-expanded="false" aria-controls="filtersPanel">Filtros</button>
       </div>
@@ -215,7 +214,12 @@
     <div class="login-header"><span class="brand-mark">H</span><h2>Bienvenido a Hire-U</h2><p>Ingresa para gestionar tu perfil y tus postulaciones.</p></div>
     <form id="loginForm">
       <label>Correo electrónico<input name="email" type="email" required autocomplete="username" placeholder="nombre@correo.com"></label>
-      <label>Contraseña<input name="password" type="password" required minlength="8" autocomplete="current-password" placeholder="••••••••"></label>
+      <label>Contraseña
+        <span class="password-control">
+          <input id="loginPassword" name="password" type="password" required minlength="8" autocomplete="current-password" placeholder="••••••••">
+          <button class="password-toggle" type="button" data-toggle-password="loginPassword" aria-label="Mostrar contraseña" title="Mostrar contraseña">◉</button>
+        </span>
+      </label>
       <button class="button button-primary full-width" type="submit">Iniciar sesión</button>
       <button class="auth-switch" id="showForgotPassword" type="button">¿Olvidaste tu contraseña?</button>
       <p class="form-message" id="loginMessage" role="status" aria-live="polite"></p>
@@ -228,8 +232,18 @@
     </form>
     <form id="resetPasswordForm" hidden>
       <input name="token" type="hidden">
-      <label>Nueva contraseña<input name="password" type="password" required minlength="8" autocomplete="new-password" placeholder="Mínimo 8 caracteres"></label>
-      <label>Confirmar contraseña<input name="confirmPassword" type="password" required minlength="8" autocomplete="new-password" placeholder="Repite la contraseña"></label>
+      <label>Nueva contraseña
+        <span class="password-control">
+          <input id="resetPassword" name="password" type="password" required minlength="8" autocomplete="new-password" placeholder="Mínimo 8 caracteres">
+          <button class="password-toggle" type="button" data-toggle-password="resetPassword" aria-label="Mostrar contraseña" title="Mostrar contraseña">◉</button>
+        </span>
+      </label>
+      <label>Confirmar contraseña
+        <span class="password-control">
+          <input id="confirmResetPassword" name="confirmPassword" type="password" required minlength="8" autocomplete="new-password" placeholder="Repite la contraseña">
+          <button class="password-toggle" type="button" data-toggle-password="confirmResetPassword" aria-label="Mostrar contraseña" title="Mostrar contraseña">◉</button>
+        </span>
+      </label>
       <button class="button button-primary full-width" type="submit">Actualizar contraseña</button>
       <button class="auth-switch" type="button" data-show-login>Volver a iniciar sesión</button>
       <p class="form-message" id="resetPasswordMessage" role="status" aria-live="polite"></p>
