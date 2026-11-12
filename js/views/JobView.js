@@ -30,6 +30,18 @@ export class JobView {
     this.getElement('filterLocation').value = location;
   }
 
+  setChatFilters(filters) {
+    this.getElement('filterKeyword').value = filters.keyword;
+    this.getElement('filterLocation').value = filters.location;
+    this.document.querySelectorAll('input[name="modality"]').forEach(input => {
+      input.checked = filters.modalities.includes(input.value);
+    });
+    this.document.querySelectorAll('input[name="type"]').forEach(input => {
+      input.checked = filters.types.includes(input.value);
+    });
+    this.getElement('sortJobs').value = filters.sort;
+  }
+
   resetFilters() {
     this.getElement('filterKeyword').value = '';
     this.getElement('filterLocation').value = '';

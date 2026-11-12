@@ -256,6 +256,37 @@
     </form>
   </dialog>
 
+  <button class="chat-launcher" id="chatLauncher" type="button" aria-label="Abrir asistente de Hire-U" aria-expanded="false" aria-controls="chatPanel">
+    <img class="chat-avatar chat-launcher-avatar" src="assets/paco-asistente.svg" alt=""><span>Habla con Paco</span>
+  </button>
+  <aside class="chat-panel" id="chatPanel" aria-label="Asistente de Hire-U" hidden>
+    <header class="chat-header">
+      <div class="chat-brand"><img class="chat-avatar" src="assets/paco-asistente.svg" alt=""><div><strong>Paco · Asistente Hire-U</strong><span>Orientación para egresados</span></div></div>
+      <button class="chat-close" id="chatClose" type="button" aria-label="Cerrar asistente">×</button>
+    </header>
+    <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-relevant="additions text">
+      <div class="chat-message assistant">Hola, soy Paco. ¿En qué puedo ayudarte el día de hoy? Puedo buscar vacantes, aplicar filtros, abrir ofertas y orientarte con tu cuenta.</div>
+      <div class="chat-identity" id="chatIdentityPrompt" hidden>
+        <span>¿Ya tienes un perfil registrado?</span>
+        <button type="button" data-chat-identity="registered">Sí, ya tengo cuenta</button>
+        <button type="button" data-chat-identity="new">Aún no, quiero registrarme</button>
+      </div>
+      <div class="chat-suggestions" id="chatSuggestions">
+        <button type="button" data-chat-question="Muéstrame vacantes remotas">Vacantes remotas</button>
+        <button type="button" data-chat-question="Busca vacantes en Bogotá">Vacantes en Bogotá</button>
+        <button type="button" data-chat-question="Muéstrame mis vacantes guardadas">Mis guardadas</button>
+        <button type="button" data-chat-question="¿Cómo creo mi perfil?">Crear perfil</button>
+        <button type="button" data-chat-question="Olvidé mi contraseña">Recuperar contraseña</button>
+      </div>
+    </div>
+    <form class="chat-form" id="chatForm">
+      <label class="sr-only" for="chatInput">Escribe tu inquietud</label>
+      <input id="chatInput" name="message" type="text" maxlength="1000" placeholder="Escribe tu inquietud…" autocomplete="off" required>
+      <button id="chatSend" type="submit" aria-label="Enviar mensaje" title="Enviar mensaje">↑</button>
+    </form>
+    <div class="chat-footer">No compartas contraseñas ni datos sensibles. <a href="mailto:soportehireu@gmail.com">Contactar soporte</a></div>
+  </aside>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script type="module" src="script.js"></script>
 </body>

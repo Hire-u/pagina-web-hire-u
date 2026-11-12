@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Paco, asistente de Hire-U</title>
+  <desc id="desc">Pato universitario con gorra USB y medalla dorada.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e9f4f1"/>
+      <stop offset="1" stop-color="#d7dfd8"/>
+    </linearGradient>
+    <linearGradient id="feather" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fffdf3"/>
+      <stop offset="1" stop-color="#e8dcc5"/>
+    </linearGradient>
+    <linearGradient id="bill" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#ffb632"/>
+      <stop offset="1" stop-color="#f07818"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff0a8"/>
+      <stop offset=".5" stop-color="#d99525"/>
+      <stop offset="1" stop-color="#ffe5a0"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#24231f" flood-opacity=".2"/>
+    </filter>
+    <clipPath id="crop"><circle cx="256" cy="256" r="242"/></clipPath>
+  </defs>
+  <circle cx="256" cy="256" r="250" fill="#fff"/>
+  <g clip-path="url(#crop)">
+    <rect width="512" height="512" fill="url(#sky)"/>
+    <path d="M0 355c57-23 96-20 142 1s97 20 145-1 135-17 225 17v150H0z" fill="#d5d5c6"/>
+    <path d="M0 385c49-18 83-15 119 4v123H0zm422-27c35-13 62-12 90 2v152h-90z" fill="#b9c5b5" opacity=".8"/>
+    <ellipse cx="267" cy="467" rx="173" ry="34" fill="#8e8d7e" opacity=".2"/>
+    <path d="M166 507c1-67 4-119 19-160 14-38 44-56 77-54 42 3 65 34 71 81 6 46 11 89 29 133z" fill="url(#feather)" stroke="#49372b" stroke-width="9" stroke-linejoin="round"/>
+    <path d="M178 390c43 19 96 24 151 7" fill="none" stroke="#c9b99e" stroke-width="8" stroke-linecap="round" opacity=".7"/>
+    <path d="M125 292c-1-86 26-144 92-170 74-29 162-4 197 61 24 46 22 107-1 154-26 52-84 88-151 91-78 3-136-32-137-136z" fill="url(#feather)" stroke="#49372b" stroke-width="10" stroke-linejoin="round" filter="url(#shadow)"/>
+    <path d="M200 225c-15-17-40-18-54 0" fill="none" stroke="#49372b" stroke-width="10" stroke-linecap="round"/>
+    <path d="M375 217c-13-14-35-16-48-2" fill="none" stroke="#49372b" stroke-width="9" stroke-linecap="round"/>
+    <ellipse cx="219" cy="276" rx="27" ry="34" fill="#fff"/>
+    <ellipse cx="354" cy="270" rx="24" ry="31" fill="#fff"/>
+    <ellipse cx="225" cy="282" rx="15" ry="22" fill="#49372b"/>
+    <ellipse cx="358" cy="276" rx="14" ry="21" fill="#49372b"/>
+    <circle cx="230" cy="274" r="5" fill="#fff"/>
+    <circle cx="362" cy="268" r="5" fill="#fff"/>
+    <path d="M208 333c23-35 52-50 86-47 34 2 65 18 91 51-20 19-48 30-88 30-38 0-68-11-89-34z" fill="url(#bill)" stroke="#63331e" stroke-width="9" stroke-linejoin="round"/>
+    <path d="M228 342c43 16 91 17 130 1" fill="none" stroke="#71341e" stroke-width="7" stroke-linecap="round"/>
+    <path d="M147 190c-16-39-5-88 30-113 52-37 143-31 197 0 43 25 61 61 46 96-4 11-16 22-33 31-43-31-99-42-161-33-29 4-55 13-79 27z" fill="#171918" stroke="#080909" stroke-width="10" stroke-linejoin="round"/>
+    <path d="M145 179c72-50 184-66 288-22 16 7 28 17 35 29-8 20-26 31-52 31-87-35-183-28-271 22-20 12-39 6-48-10 5-18 20-37 48-50z" fill="#262825" stroke="#080909" stroke-width="9" stroke-linejoin="round"/>
+    <text x="276" y="153" fill="#f5f2e9" font-family="Georgia,serif" font-size="55" font-weight="700" text-anchor="middle" transform="rotate(-8 276 153)">USB</text>
+    <path d="M416 295c11-22 35-31 55-22 21 9 29 33 19 54l-26 59-70-30z" fill="url(#feather)" stroke="#49372b" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M425 353c-14 8-24 23-26 40-2 17 8 28 21 25 13-3 22-16 26-28 9 14 23 19 33 10 11-11 6-30-5-42" fill="url(#feather)" stroke="#49372b" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M435 308l34-74" stroke="#49372b" stroke-width="9" stroke-linecap="round"/>
+    <path d="M451 228l19-30 20 31" fill="url(#gold)" stroke="#674519" stroke-width="7" stroke-linejoin="round"/>
+    <circle cx="470" cy="284" r="62" fill="url(#gold)" stroke="#60451f" stroke-width="8"/>
+    <circle cx="470" cy="284" r="49" fill="#f8f2de" stroke="#8a672d" stroke-width="4"/>
+    <circle cx="470" cy="284" r="42" fill="none" stroke="#b58b42" stroke-width="2" stroke-dasharray="2 5"/>
+    <path d="M471 248c-10 0-16 8-16 17 0 7 4 11 9 14-13 8-19 22-20 37h52c-1-15-7-29-20-37 6-3 10-8 10-15 0-9-6-16-15-16z" fill="#ded6c2" stroke="#554c3b" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M464 269l7 7 7-7m-13 22h13m-13 9h13" fill="none" stroke="#554c3b" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="256" cy="256" r="242" fill="none" stroke="#fff" stroke-width="12"/>
+  </g>
+</svg>

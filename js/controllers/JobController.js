@@ -1,13 +1,25 @@
+import { ChatController } from './ChatController.js';
+import { ChatModel } from '../models/ChatModel.js';
+import { ChatView } from '../views/ChatView.js';
+
 export class JobController {
   constructor(model, view, authModel) {
     this.model = model;
     this.view = view;
     this.authModel = authModel;
     this.visibleJobs = [];
+    this.chatController = new ChatController(new ChatModel(), new ChatView(), {
+      openLogin: () => {
+        this.view.showLoginForm();
+        this.view.showLoginModal();
+      },
+      performAction: message => this.handleChatCommand(message)
+    });
   }
 
   start() {
     this.bindEvents();
+    this.chatController.start();
     this.applyFilters();
     this.restoreSession();
     this.handlePasswordResetLink();
@@ -83,6 +95,108 @@ export class JobController {
     this.view.scrollToJobs();
   }
 
+  handleChatCommand(message) {
+    const query = this.normalizeChatText(message);
+    if (/mis vacantes guardadas|mis guardados|mis favoritos|vacantes favoritas/.test(query)) {
+      const savedJobs = this.model.getSavedJobs();
+        this.view.resetFilters();
+      this.visibleJobs = this.model.jobs.filter(job => savedJobs.has(job.id));
+      this.view.renderJobs(this.visibleJobs, savedJobs, this.model.jobs.length);
+      this.view.scrollToJobs();
+      return {
+        reply: this.visibleJobs.length
+          ? `Encontré ${this.visibleJobs.length} vacante${this.visibleJobs.length === 1 ? '' : 's'} guardada${this.visibleJobs.length === 1 ? '' : 's'}. Ya las mostré en la sección de empleos.`
+          : 'Todavía no tienes vacantes guardadas. Puedes guardar una con el corazón que aparece junto a cada oferta.'
+      };
+    }
+
+    if (/limpia los filtros|limpiar filtros|quita los filtros|borra los filtros/.test(query)) {
+      this.clearFilters();
+      return { reply: 'Listo, quité los filtros y mostré todas las vacantes.' };
+    }
+
+    const filters = this.getChatSearchFilters(message);
+    const searchRequested = /busca|buscar|mu[eé]strame|encuentra|vacantes?|empleos?|trabajos?|ofertas?|oportunidades/.test(query)
+        || Boolean(filters.location || filters.modalities.length || filters.types.length);
+    const saveRequested = /guarda|guardar|a[nñ]ade.*guardad|agrega.*favorit/.test(query);
+      const knownJobMention = this.model.jobs.some(job => [job.title, job.area, job.company]
+        .some(term => query.includes(this.normalizeChatText(term))));
+      const detailsRequested = /(?:abre|abrir|ver|muestra).*(?:detalle|oferta|vacante)|(?:detalle|informacion).*(?:vacante|oferta)/.test(query)
+        && (knownJobMention || /vacante|oferta|empleo|trabajo/.test(query));
+    if (!searchRequested && !saveRequested && !detailsRequested) return null;
+
+    this.view.setChatFilters(filters);
+    this.visibleJobs = this.model.getJobs(filters);
+    this.view.renderJobs(this.visibleJobs, this.model.getSavedJobs(), this.model.jobs.length);
+    this.view.scrollToJobs();
+
+    if (saveRequested) {
+      if (this.visibleJobs.length !== 1) {
+        return {
+          reply: this.visibleJobs.length
+            ? `Encontré ${this.visibleJobs.length} ofertas. Dime el cargo o la empresa para saber cuál quieres guardar.`
+            : 'No encontré una vacante con esos datos. Prueba con un cargo, área o empresa.'
+        };
+      }
+      const [job] = this.visibleJobs;
+      const isSaved = this.model.isSaved(job.id);
+      if (!isSaved) this.model.toggleSaved(job.id);
+      this.renderVisibleJobs();
+      return { reply: `${job.title} ${isSaved ? 'ya estaba' : 'quedó'} en tus vacantes guardadas.` };
+    }
+
+    if (detailsRequested && this.visibleJobs.length === 1) {
+      this.openJob(this.visibleJobs[0].id);
+      this.chatController.closePanel();
+      return { reply: `Abrí los detalles de ${this.visibleJobs[0].title}.` };
+    }
+
+    return {
+      reply: this.visibleJobs.length
+        ? `Encontré ${this.visibleJobs.length} vacante${this.visibleJobs.length === 1 ? '' : 's'} y actualicé los filtros. ${detailsRequested ? 'Dime el cargo o la empresa para abrir una oferta específica.' : ''}`.trim()
+        : 'No encontré vacantes con esos filtros. Puedes probar con otro cargo, ciudad o modalidad.'
+    };
+  }
+
+  getChatSearchFilters(message) {
+    const query = this.normalizeChatText(message);
+    const location = this.model.getLocations().find(option => query.includes(this.normalizeChatText(option))) || '';
+    const modalities = [...new Set(this.model.jobs.map(job => job.modality))];
+    const modality = modalities.find(option => {
+      const normalized = this.normalizeChatText(option);
+      return query.includes(normalized) || (normalized === 'remoto' && /remot/.test(query));
+    });
+    const types = [...new Set(this.model.jobs.map(job => job.type))];
+    const type = types.find(option => query.includes(this.normalizeChatText(option))
+      || (option === 'Prácticas' && /practic/.test(query)));
+    const knownTerms = [...new Set(this.model.jobs.flatMap(job => [job.title, job.area, job.company]))]
+      .sort((first, second) => second.length - first.length);
+    let keyword = knownTerms.find(term => query.includes(this.normalizeChatText(term))) || '';
+
+    if (!keyword) {
+      keyword = query
+        .replace(/\b(?:busca|buscar|busco|mu[eé]strame|muestra|encuentra|encontrar|quiero|necesito|dame|hay|ver|verme|abre|abrir|detalles|detalle|guarda|guardar|guardame|vacantes?|empleos?|trabajos?|ofertas?|oportunidades|disponibles?|guardadas?|favoritas?|por|para|de|del|en|la|el|las|los|una?|mis|me|que|tienes|tiene|con)\b/g, ' ')
+        .replace(/\b(?:remot\w*|hibrid\w*|presencial\w*|practic\w*|primer empleo|tiempo completo)\b/g, ' ')
+        .replace(/\b(?:bogota|medellin|cali|barranquilla|colombia)\b/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+    const knownTermFound = knownTerms.some(term => query.includes(this.normalizeChatText(term)));
+    if (knownTermFound) keyword = knownTerms.find(term => query.includes(this.normalizeChatText(term))) || keyword;
+
+    return {
+      keyword,
+      location,
+      modalities: modality ? [modality] : [],
+      types: type ? [type] : [],
+      sort: 'recent'
+    };
+  }
+
+  normalizeChatText(value) {
+    return value.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
   handleJobGridClick(event) {
     const saveButton = event.target.closest('[data-save]');
     if (saveButton) {
@@ -128,6 +242,7 @@ export class JobController {
     try {
       const { user } = await this.authModel.login(this.view.getLoginCredentials());
       this.view.setAuthenticatedUser(user);
+      this.chatController.setAuthenticatedUser(user);
       this.view.closeLoginModal();
       this.view.showToast(`Bienvenido, ${user.fullName}`);
       this.view.getElement('loginForm').reset();
@@ -187,9 +302,11 @@ export class JobController {
   async restoreSession() {
     try {
       const user = await this.authModel.currentUser();
-      if (user) this.view.setAuthenticatedUser(user);
+      this.view.setAuthenticatedUser(user);
+      this.chatController.setAuthenticatedUser(user);
     } catch {
       this.view.setAuthenticatedUser(null);
+      this.chatController.setAuthenticatedUser(null);
     }
   }
 
@@ -197,6 +314,7 @@ export class JobController {
     try {
       await this.authModel.logout();
       this.view.setAuthenticatedUser(null);
+      this.chatController.setAuthenticatedUser(null);
       this.view.showToast('Sesión cerrada');
     } catch (error) {
       this.view.showToast(error.message);

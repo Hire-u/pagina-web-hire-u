@@ -43,6 +43,40 @@
 .form-message.error{color:#dc2626}
 header [data-auth-register][hidden],header [data-open-login][hidden]{display:none}
 .email-domain-hint{display:block;margin-top:5px;color:#686868;font-size:.75rem;font-weight:400}
+.chat-launcher{position:fixed;right:24px;bottom:22px;z-index:90;display:flex;align-items:center;gap:10px;padding:10px 17px 10px 10px;border:0;border-radius:999px;background:#ff7a00;color:#171717;font-weight:750;box-shadow:0 8px 26px rgba(0,0,0,.24)}
+.chat-launcher:hover{background:#ff9638;transform:translateY(-2px)}
+.chat-avatar{display:block;width:40px;height:40px;flex:0 0 40px;border:2px solid #fff;border-radius:50%;object-fit:cover;background:#eef3ec}
+.chat-launcher-avatar{width:38px;height:38px;flex-basis:38px;border:2px solid #171717}
+.chat-panel{position:fixed;right:24px;bottom:92px;z-index:89;display:grid;width:min(390px,calc(100vw - 32px));height:min(600px,calc(100dvh - 120px));min-height:360px;grid-template-rows:auto minmax(0,1fr) auto auto;background:#fff;border:1px solid #ded9d3;border-radius:14px;box-shadow:0 18px 60px rgba(0,0,0,.25);overflow:hidden;animation:chat-appear .18s ease-out}
+.chat-panel[hidden]{display:none}
+@keyframes chat-appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.chat-header{display:flex;align-items:center;justify-content:space-between;padding:15px 17px;background:#171717;color:#fff}
+.chat-brand{display:flex;align-items:center;gap:11px}
+.chat-brand div{display:grid;line-height:1.35}
+.chat-brand strong{font-size:.92rem}
+.chat-brand div span{color:#c6c0ba;font-size:.74rem}
+.chat-close{width:34px;height:34px;border:0;border-radius:50%;background:transparent;color:#fff;font-size:1.5rem;line-height:1}
+.chat-close:hover{background:rgba(255,255,255,.12)}
+.chat-messages{display:flex;flex-direction:column;align-items:flex-start;gap:11px;padding:16px;overflow-y:auto;background:#faf9f7}
+.chat-message{max-width:90%;padding:11px 13px;border-radius:12px;font-size:.87rem;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.chat-message.assistant{border:1px solid #e8e3dd;border-bottom-left-radius:4px;background:#fff;color:#282522}
+.chat-message.user{align-self:flex-end;border-bottom-right-radius:4px;background:#24211e;color:#fff}
+.chat-identity{display:grid;gap:8px;width:100%;padding:12px;border-top:1px solid #e8e3dd;border-bottom:1px solid #e8e3dd;color:#34302c;font-size:.82rem}
+.chat-identity[hidden],.chat-suggestions[hidden]{display:none}
+.chat-identity button,.chat-suggestions button,.chat-actions a,.chat-actions button{width:100%;padding:9px 11px;border:1px solid #e3d8cb;border-radius:8px;background:#fff;color:#382719;font-size:.8rem;font-weight:650;text-align:left}
+.chat-identity button:hover,.chat-suggestions button:hover,.chat-actions a:hover,.chat-actions button:hover{border-color:#ff7a00;background:#fff4e9}
+.chat-suggestions{display:flex;flex-wrap:wrap;gap:7px}
+.chat-suggestions button{width:auto;padding:7px 10px;border-radius:999px;font-size:.75rem}
+.chat-actions{display:grid;gap:7px;width:min(90%,320px);margin-top:-5px}
+.chat-actions a{display:block}
+.chat-form{display:grid;grid-template-columns:minmax(0,1fr) 42px;gap:8px;padding:12px 14px;border-top:1px solid #e8e3dd;background:#fff}
+.chat-form input{min-width:0;height:42px;padding:0 12px;border:1px solid #d8d2cb;border-radius:8px;outline:0}
+.chat-form input:focus{border-color:#ff7a00;box-shadow:0 0 0 3px rgba(255,122,0,.14)}
+.chat-form button{border:0;border-radius:8px;background:#ff7a00;color:#171717;font-size:1.35rem;font-weight:700}
+.chat-form button:disabled{opacity:.55;cursor:wait}
+.chat-footer{display:flex;justify-content:space-between;gap:8px;padding:0 14px 11px;background:#fff;color:#77716a;font-size:.68rem}
+.chat-footer a{flex-shrink:0;color:#a64800;font-weight:700}
+@media(max-width:600px){.chat-launcher{right:14px;bottom:14px}.chat-panel{right:10px;bottom:76px;width:calc(100vw - 20px);height:min(68dvh,580px);min-height:350px}.chat-footer{font-size:.65rem}}
 .profile-page{min-height:100vh;background-color:#f4f6f7;background-image:linear-gradient(rgba(18,26,32,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(18,26,32,.035) 1px,transparent 1px);background-size:28px 28px}
 .profile-header{justify-content:space-between}
 .profile-content{width:min(760px,calc(100% - 32px));margin:52px auto 0;padding-bottom:52px}

@@ -5,6 +5,7 @@ import MySQLStoreFactory from 'express-mysql-session';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import authRoutes from './routes/authRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
 import { pool } from './config/database.js';
 
 const app = express();
@@ -46,6 +47,7 @@ app.use('/assets', express.static(path.join(projectRoot, 'assets')));
 app.use('/js', express.static(path.join(projectRoot, 'js')));
 
 app.use('/api/auth', authRoutes);
+app.use('/api/chat', chatRoutes);
 app.use((request, response) => response.status(404).json({ message: 'Recurso no encontrado.' }));
 app.use((error, request, response, next) => {
   if (response.headersSent) return next(error);

@@ -74,7 +74,7 @@ Requisitos: Node.js 20 o posterior y MySQL 8 (o una versión compatible con `utf
    cp .env.example .env
    ```
 
-   Configura `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME=Hireu`. Para recuperar contraseñas, configura `APP_BASE_URL` y las variables `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` y `SMTP_FROM` con los datos de tu proveedor de correo. Cambia `SESSION_SECRET` por una cadena aleatoria de al menos 32 caracteres. No compartas ni subas `.env` al repositorio; está excluido por `.gitignore`.
+   Configura `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME=Hireu`. Para recuperar contraseñas, configura `APP_BASE_URL` y las variables `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` y `SMTP_FROM` con los datos de tu proveedor de correo. El asistente responde preguntas frecuentes sin servicios externos; para habilitar respuestas generativas, configura `OPENAI_API_KEY` y opcionalmente `OPENAI_MODEL`. Configura `SUPPORT_EMAIL` para cambiar el correo de soporte. Cambia `SESSION_SECRET` por una cadena aleatoria de al menos 32 caracteres. No compartas ni subas `.env` al repositorio; está excluido por `.gitignore`.
 
    Puedes generar el secreto de sesión con `openssl rand -hex 48` y pegar el resultado en `.env`. Para desarrollo, crea un usuario MySQL dedicado en vez de usar `root`:
 
@@ -114,6 +114,7 @@ La cuenta se guarda en `Hireu.Egresado`: nombres, apellidos, correo instituciona
 - `POST /api/auth/reset-password`: guarda el nuevo hash bcrypt y consume el token, que vence en una hora.
 - `GET /api/auth/me`: devuelve el perfil de la sesión actual o `401`.
 - `POST /api/auth/logout`: destruye la sesión y expira la cookie.
+- `POST /api/chat`: contesta dudas sobre Hire-U con respuestas integradas o el proveedor IA configurado; limita mensajes e intentos y deriva consultas no resueltas a soporte.
 
 El registro valida los límites de los campos, normaliza correos, aplica bcrypt y devuelve `409` si el correo ya está registrado. Los endpoints de autenticación tienen límite de intentos. No se devuelve el hash ni se aceptan consultas SQL desde el cliente. Los egresados que ya estaban en la tabla antes de la migración tienen `ContrasenaHash` vacío: no pueden iniciar sesión hasta que se les asigne una contraseña mediante un proceso seguro; no se les asigna una contraseña común automáticamente.
 
@@ -123,6 +124,7 @@ El registro valida los límites de los campos, normaliza correos, aplica bcrypt 
 - Guardar vacantes favoritas en `localStorage`.
 - Crear perfil con datos académicos y contraseña; el registro inicia sesión automáticamente.
 - Iniciar sesión con una cuenta almacenada en MySQL, reconocer la sesión al recargar y cerrarla desde la página principal.
+- Consultar a Paco, el asistente de Hire-U: responde preguntas, filtra vacantes por cargo, ciudad, modalidad y tipo; muestra vacantes guardadas, guarda una oferta y abre sus detalles. Usa la sesión existente para consultas personales, guía a nuevos usuarios al registro y ofrece soporte humano cuando no puede resolver una inquietud.
 
 El catálogo de vacantes sigue siendo una colección de demostración en `JobModel.js`. Este backend administra cuentas y sesiones, no ofrece todavía gestión de vacantes ni postulaciones. Las credenciales de una base real no se incluyen en el repositorio; cada entorno debe completar su propio `.env`.
 
@@ -134,6 +136,7 @@ El catálogo de vacantes sigue siendo una colección de demostración en `JobMod
 4. Recarga la página: el saludo debe mantenerse gracias a la sesión.
 5. Cierra sesión, vuelve a ingresar con el correo y la contraseña registrados y comprueba el saludo.
 6. Prueba un correo duplicado y una contraseña incorrecta; la interfaz debe mostrar el error sin exponer información sensible.
+7. Abre el asistente, prueba una pregunta frecuente y una consulta fuera del alcance; comprueba que la segunda ofrezca contactar a soporte. Para respuestas generativas, configura `OPENAI_API_KEY` en `.env`.
 
 ## Tecnologías
 
