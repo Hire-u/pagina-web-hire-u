@@ -15,7 +15,7 @@ const sessionStore = new MySQLStore({
   clearExpired: true,
   checkExpirationInterval: 15 * 60 * 1000,
   expiration: 24 * 60 * 60 * 1000,
-  createDatabaseTable: true
+  createDatabaseTable: false
 }, pool);
 
 if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) {

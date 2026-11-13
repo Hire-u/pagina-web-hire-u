@@ -78,7 +78,7 @@ El proyecto separa el sitio, el servidor y la base de datos. Para explicarlo, pu
 
 ## Configuración local
 
-Requisitos: Node.js 20 o posterior y MySQL 8 (o una versión compatible con `utf8mb4`). No se debe conectar MySQL directamente desde el navegador.
+Requisitos: Node.js 20 o posterior y MySQL 8.0.13 o posterior (o una versión compatible con `utf8mb4`). No se debe conectar MySQL directamente desde el navegador.
 
 1. Prepara la base `Hireu` con el esquema SQL que compartiste. **Ese archivo comienza con `DROP DATABASE IF EXISTS Hireu`; no lo ejecutes sobre una base que quieras conservar**, porque borrará todos sus datos. Si la base ya existe, omite la importación completa y continúa con la migración de autenticación. Si estás creando una base vacía, créala primero, quita esa línea `DROP DATABASE` del archivo y luego importa el resto del esquema.
 
@@ -96,7 +96,15 @@ Requisitos: Node.js 20 o posterior y MySQL 8 (o una versión compatible con `utf
    mysql -u root -p < database/migrations/002_add_password_reset.sql
    ```
 
-3. Crea el archivo local de configuración y edita los valores para tu instalación:
+3. Agrega los índices y el registro básico de cambios:
+
+   ```bash
+   mysql -u root -p -D Hireu < database/migrations/003_database_safety_and_audit.sql
+   ```
+
+   Esta migración no borra perfiles y conserva la tabla de sesiones si ya existe. Acelera búsquedas de correo y recuperación de contraseña, y crea `EgresadoDatosBasicos`, una vista sin campos de acceso. El esquema base ya incluye la tabla `Auditoria` y registros de cambios.
+
+4. Crea el archivo local de configuración y edita los valores para tu instalación:
 
    ```bash
    cp .env.example .env
@@ -104,25 +112,51 @@ Requisitos: Node.js 20 o posterior y MySQL 8 (o una versión compatible con `utf
 
    Configura `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME=Hireu`. Para recuperar contraseñas, configura `APP_BASE_URL` y las variables `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` y `SMTP_FROM` con los datos de tu proveedor de correo. El asistente responde preguntas frecuentes sin servicios externos; para habilitar respuestas generativas, configura `OPENAI_API_KEY` y opcionalmente `OPENAI_MODEL`. Configura `SUPPORT_EMAIL` para cambiar el correo de soporte. Cambia `SESSION_SECRET` por una cadena aleatoria de al menos 32 caracteres. No compartas ni subas `.env` al repositorio; está excluido por `.gitignore`.
 
-   Puedes generar el secreto de sesión con `openssl rand -hex 48` y pegar el resultado en `.env`. Para desarrollo, crea un usuario MySQL dedicado en vez de usar `root`:
+   Puedes generar el secreto de sesión con `openssl rand -hex 48` y pegar el resultado en `.env`. Para desarrollo, crea un usuario MySQL dedicado en vez de usar `root`. Dale acceso solo a las tablas que necesita la aplicación:
 
    ```sql
    CREATE USER 'hire_u_app'@'localhost' IDENTIFIED BY 'elige-una-contrasena';
-   GRANT SELECT, INSERT, UPDATE, DELETE, CREATE ON Hireu.* TO 'hire_u_app'@'localhost';
+   GRANT SELECT, INSERT, UPDATE ON Hireu.Egresado TO 'hire_u_app'@'localhost';
+   GRANT SELECT, INSERT ON Hireu.Estudios TO 'hire_u_app'@'localhost';
+   GRANT SELECT, INSERT, UPDATE, DELETE ON Hireu.sessions TO 'hire_u_app'@'localhost';
    ```
 
-   El servidor crea la tabla de sesiones automáticamente la primera vez que inicia; por eso el usuario de aplicación necesita `CREATE` además de los permisos de lectura, inserción, actualización y eliminación.
-
-4. Instala dependencias e inicia el backend desde la raíz del proyecto:
+5. Instala dependencias e inicia el backend desde la raíz del proyecto:
 
    ```bash
    npm install
    npm run dev
    ```
 
-5. Abre `http://localhost:3000`. Express sirve el HTML, CSS, módulos frontend y endpoints API desde el mismo origen. No uses `file://`, Live Server ni `python -m http.server` para este flujo, porque esos servidores no ejecutan la API.
+6. Abre `http://localhost:3000`. Express sirve el HTML, CSS, módulos frontend y endpoints API desde el mismo origen. No uses `file://`, Live Server ni `python -m http.server` para este flujo, porque esos servidores no ejecutan la API.
 
 Si aparece el aviso de vista previa estática o no se puede conectar con la API, confirma que MySQL está activo, que existe `.env` con sus datos de conexión y que abriste `http://localhost:3000` después de ejecutar `npm run dev`. El puerto `8000` solo sirve para revisar el diseño y no guarda registros.
+
+## Cuidados sencillos de la base de datos
+
+- **Rendimiento:** los índices nuevos ayudan a encontrar cuentas y enlaces de recuperación más rápido. Si la aplicación se siente lenta, revisa primero si el servidor tiene memoria y espacio disponibles y si MySQL está usando mucha CPU o disco.
+- **Seguimiento:** los cambios y eliminaciones de perfiles quedan registrados con fecha, cuenta de MySQL, origen de la conexión y nombres de los campos modificados. No se guardan nombres, correos, contraseñas ni tokens. Si toda la aplicación usa una sola cuenta de MySQL, el registro identifica esa cuenta técnica, no a cada persona que inició sesión.
+- **Respaldos:** el script `database/backup.sh` crea una copia comprimida. Configura `~/.my.cnf` fuera del proyecto para no guardar la contraseña en el repositorio:
+
+  ```ini
+  [client]
+  host=servidor
+  port=3306
+  user=usuario_respaldo
+  password=tu-contrasena
+  ```
+
+  Protege ese archivo y ejecuta `chmod 600 ~/.my.cnf`. Crea la copia manualmente con `DB_NAME=Hireu BACKUP_DIR=/ruta/segura bash database/backup.sh`. Para programarla cada día a las 2:00 a. m., agrega una tarea cron y reemplaza las rutas de ejemplo:
+
+  ```bash
+  0 2 * * * DB_NAME=Hireu BACKUP_DIR=/ruta/segura MYSQL_CNF=/home/usuario/.my.cnf bash /ruta/al/proyecto/database/backup.sh
+  ```
+
+  Las copias quedan fuera de la carpeta pública por defecto; guárdalas fuera del servidor MySQL y protégelas. Para recuperar una copia en una base de pruebas, ejecuta `gzip -dc /ruta/segura/Hireu_fecha.sql.gz | mysql --defaults-extra-file="$HOME/.my.cnf" Hireu`. Prueba la restauración de vez en cuando; tener un archivo no garantiza que pueda recuperarse. Para volver a un momento exacto entre respaldos, el administrador del servidor debe habilitar y conservar los registros binarios de MySQL.
+- **Privacidad en pruebas:** usa perfiles inventados. Si necesitas una copia de producción, anonimízala antes de permitir el acceso al equipo de pruebas.
+- **Disponibilidad:** una réplica y la promoción automática de otro servidor requieren infraestructura y configuración del proveedor donde se aloje MySQL; no se pueden activar solo con una migración de este proyecto.
+
+Hire-U usa MySQL relacional porque sus perfiles y estudios tienen datos organizados y relacionados. Para cambiar el esquema en el futuro, agrega primero lo nuevo, adapta la aplicación y retira lo anterior en un cambio posterior; así evitas borrar datos mientras la aplicación todavía los necesita. Las contraseñas y los enlaces de recuperación se guardan como hashes; para proteger los demás datos personales, configura el cifrado de conexión y almacenamiento en el proveedor de MySQL. La aplicación no necesita guardar datos de tarjetas.
 
 ### GitHub Codespaces
 
@@ -134,7 +168,7 @@ Para un despliegue, usa HTTPS y establece `NODE_ENV=production`; así la cookie 
 
 ## Base de datos y API
 
-La cuenta se guarda en `Hireu.Egresado`: nombres, apellidos, correo institucional, carrera, año de grado y perfil profesional. La contraseña se guarda como hash en `ContrasenaHash`. La institución y el nivel académico se guardan en `Hireu.Estudios`. La tabla `sessions` es gestionada por `express-mysql-session`.
+La cuenta se guarda en `Hireu.Egresado`: nombres, apellidos, correo institucional, carrera, año de grado y perfil profesional. La contraseña se guarda como hash en `ContrasenaHash`. La institución y el nivel académico se guardan en `Hireu.Estudios`. La migración 003 crea la tabla `sessions`; `express-mysql-session` guarda allí las sesiones sin necesitar permisos para crear tablas al iniciar.
 
 - `POST /api/auth/register`: valida y crea un perfil, inicia sesión y devuelve `201`.
 - `POST /api/auth/login`: valida credenciales y devuelve el perfil o un error genérico `401`.
